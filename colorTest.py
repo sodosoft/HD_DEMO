@@ -3,20 +3,36 @@ import cv2
 import numpy as np
 import pytesseract
 from PIL import ImageGrab
+import clipboard
+import time
 
-button5location = pg.locateOnScreen('D:/green.png')# 이미지가 있는 위치를 가져옵니다. 
-print(button5location)  
+# button5location = pg.locateOnScreen('D:/green.png')# 이미지가 있는 위치를 가져옵니다. 
+# print(button5location)  
 
-if(button5location != None):
-    startX =  button5location.left + 132   
-    startY =  button5location.top
+for idx, i in enumerate(pg.locateAllOnScreen("D:/green3.png"), start=1):
 
-    # 캡쳐 구간
-    img = ImageGrab.grab((button5location.left + 132, startY, startX + 35 ,startY + 18))   
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    text = pytesseract.image_to_string(img)
+    # if idx == 2: # 2번쨰 등장하는 형상에만 동작 *참고 : start=1
 
-    print(text) 
+    print(i.left, i.top)  
+
+    if(i != None):
+        startX =  i.left + 132   
+        startY =  i.top
+
+        # 캡쳐 구간
+        img = ImageGrab.grab((startX, startY, startX + 35 ,startY + 18))   
+        pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+        text = pytesseract.image_to_string(img)
+
+        print(text) 
+        
+        clipboard.copy(text)
+        pg.moveTo(startX + 40, startY)
+        pg.click()  
+        pg.hotkey('ctrl','v')
+        # pg.moveTo(startX + 10,startY + 180)    
+        # pg.click()  
+        time.sleep(0.5)
 # img = cv2.imread('D:/colorTest.png')
 # hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 # bound_lower = np.array([25, 20, 20])

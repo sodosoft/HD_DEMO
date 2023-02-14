@@ -7,6 +7,10 @@ import configparser
 # pip install numpy
 
 from datetime import datetime
+from PIL import ImageGrab
+import pytesseract
+import clipboard
+import time
 
 now  = datetime.now()
 print("현재 :", now)	# 현재 : 2021-01-09 21:30:12.050111
@@ -78,9 +82,7 @@ def clickMe():
     # myScreenshot.save('D:/test2.png')
     #  messagebox.showinfo("mouse position", pyautogui.position())
     # pyautogui.onScreen('D:/test3.png',region=(3187,462,20,30))
-    from PIL import ImageGrab
-    from PIL import Image
-    import pytesseract
+   
     
     # 설정파일 읽기
     config = configparser.ConfigParser()    
@@ -104,8 +106,7 @@ def clickMe():
             
     print(result)
     
-    import clipboard
-    import time
+    
     
     # 1
     for i in range(5):
@@ -121,7 +122,25 @@ def clickMe():
     # img = ImageGrab.grab((945,463,979,480))   
     # img.save("D:/test5.png")    
     sys.exit()
-    
+def color_def() : 
+    #red / green / blue pre-define
+    red = (255,0,0)
+    green = (0,255,0)
+    blue = (0,0,255)
+
+    #screen-shot
+    screen = ImageGrab.grab()
+
+    #get current position and rgb
+    pyautogui.moveTo(450, 186)
+    pos = pyautogui.position()
+    print(pos)
+    rgb = screen.getpixel(pos)
+
+    if rgb == red : print("red")
+    elif rgb == green : print("green")
+    elif rgb == blue : print("blue")
+    else : print("알 수 없음")   
 def btnClick2():
     import subprocess
 
@@ -129,6 +148,32 @@ def btnClick2():
         
 def btnClick():
     sys.exit()
+    
+def btnColorClick():
+   for idx, i in enumerate(pyautogui.locateAllOnScreen("D:/green3.png"), start=1):
+
+    # if idx == 2: # 2번쨰 등장하는 형상에만 동작 *참고 : start=1
+
+    print(i.left, i.top)  
+
+    if(i != None):
+        startX =  i.left + 132   
+        startY =  i.top
+
+        # 캡쳐 구간
+        img = ImageGrab.grab((startX, startY, startX + 35 ,startY + 18))   
+        pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+        text = pytesseract.image_to_string(img)
+
+        print(text) 
+        
+        clipboard.copy(text)
+        pyautogui.moveTo(startX + 40, startY)
+        pyautogui.click()  
+        pyautogui.hotkey('ctrl','v')
+        # pg.moveTo(startX + 10,startY + 180)    
+        # pg.click()  
+        # time.sleep(0.5)
     
 label = ttk.Label(text = '기준 좌표를 확인하세요 ')
 label.grid(column = 0, row = 0)  
@@ -142,8 +187,10 @@ if(enable):
     action1.configure(state='enabled')
 else:
     action1.configure(state='disabled')
-action2=ttk.Button(win, text="종료", command=btnClick)
-action2.grid(column=0, row=4)
+action4=ttk.Button(win, text="색깔", command=color_def)
+action4.grid(column=0, row=4)    
+action3=ttk.Button(win, text="종료", command=btnClick)
+action3.grid(column=0, row=5)
 # action3=ttk.Button(win, text="추출", command=btnClick2)
 # action3.grid(column=0, row=3)
 win.mainloop()
